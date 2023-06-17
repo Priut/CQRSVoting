@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="votingEvent.common" />
+        <module name="invite.cmd" />
+        <module name="invite.common" />
+        <module name="votingEvent.cmd" />
+        <module name="votingEvent.query" />
+        <module name="cqrs.core" />
+        <module name="user.common" />
+        <module name="invite.query" />
+        <module name="user.cmd" />
+        <module name="user.query" />
+        <module name="exceptionHandler" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="cmd" target="17" />
+      <module name="cmd (1)" target="17" />
+      <module name="cmd (2)" target="17" />
+      <module name="common" target="17" />
+      <module name="common (1)" target="17" />
+      <module name="common (2)" target="17" />
+      <module name="query" target="17" />
+      <module name="votingE.cmd" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="cmd" options="-parameters" />
+      <module name="cmd (1)" options="-parameters" />
+      <module name="cmd (2)" options="-parameters" />
+      <module name="common" options="-parameters" />
+      <module name="common (1)" options="-parameters" />
+      <module name="common (2)" options="-parameters" />
+      <module name="cqrs.core" options="-parameters" />
+      <module name="invite.cmd" options="-parameters" />
+      <module name="invite.common" options="-parameters" />
+      <module name="invite.query" options="-parameters" />
+      <module name="query" options="-parameters" />
+      <module name="user.cmd" options="-parameters" />
+      <module name="user.common" options="-parameters" />
+      <module name="user.query" options="-parameters" />
+      <module name="votingE.cmd" options="-parameters" />
+      <module name="votingEvent.cmd" options="-parameters" />
+      <module name="votingEvent.common" options="-parameters" />
+      <module name="votingEvent.query" options="-parameters" />
+    </option>
+  </component>
+</project>
