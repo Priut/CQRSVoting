@@ -46,16 +46,9 @@ public class InviteController {
         return new ResponseEntity<>(new BaseResponse("Invite creation request completed successfully!"), HttpStatus.CREATED);
     }
 
-    //@CrossOrigin(origins = "http://localhost:5002")
-    //TODO
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<BaseResponse> deleteInvite(@PathVariable String id) throws Exception {
-        commandDispacher.send(new DeleteInviteCommand(id));
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-    @PutMapping(path = "/status/{id}")
-    public ResponseEntity<BaseResponse> changeStatus(@PathVariable String id) throws Exception {
+    @PutMapping(path = "/{id}/status")
+    public ResponseEntity<BaseResponse> changeStatus(@PathVariable String id) {
         commandDispacher.send(new ChangeStatusCommand(id));
-        return new ResponseEntity<>(new BaseResponse("Status changed successfully!"), HttpStatus.OK);
+        return new ResponseEntity<>(new BaseResponse("Status changed successfully!"), HttpStatus.NO_CONTENT);
     }
 }

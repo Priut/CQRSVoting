@@ -1,11 +1,13 @@
 package com.licenta.vote.cmd.api.commands;
 
 import com.licenta.cqrs.core.handlers.EventSourcingHandler;
+import com.licenta.vote.CustomExceptions.UniqueConstraintViolationException;
 import com.licenta.vote.CustomExceptions.UserNotFoundException;
 import com.licenta.vote.CustomExceptions.VotingEventNotFoundException;
 import com.licenta.vote.cmd.domain.EventStoreRepository;
 import com.licenta.vote.cmd.domain.InviteAggregate;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +63,11 @@ public class InviteCommandHandler implements CommandHandler {
                     var invComm = new InviteUserCommand(uId,id_event);
                     String id = UUID.randomUUID().toString();
                     invComm.setId(id);
-                    handle(invComm);
+                    try{
+                        handle(invComm);
+                    } catch (UniqueConstraintViolationException e){
+                        continue;
+                    }
             }
         }
     }
@@ -77,7 +83,11 @@ public class InviteCommandHandler implements CommandHandler {
                 var invComm = new InviteUserCommand(uId,id_event);
                 String id = UUID.randomUUID().toString();
                 invComm.setId(id);
-                handle(invComm);
+                try{
+                    handle(invComm);
+                } catch (UniqueConstraintViolationException e){
+                    continue;
+                }
             }
         }
     }
@@ -93,7 +103,11 @@ public class InviteCommandHandler implements CommandHandler {
                 var invComm = new InviteUserCommand(uId,id_event);
                 String id = UUID.randomUUID().toString();
                 invComm.setId(id);
-                handle(invComm);
+                try{
+                    handle(invComm);
+                } catch (UniqueConstraintViolationException e){
+                    continue;
+                }
             }
         }
     }
@@ -109,7 +123,11 @@ public class InviteCommandHandler implements CommandHandler {
                 var invComm = new InviteUserCommand(uId,id_event);
                 String id = UUID.randomUUID().toString();
                 invComm.setId(id);
-                handle(invComm);
+                try{
+                    handle(invComm);
+                } catch (UniqueConstraintViolationException e){
+                    continue;
+                }
             }
         }
     }
@@ -123,16 +141,18 @@ public class InviteCommandHandler implements CommandHandler {
         try {
             HttpResponse<String> response1 = httpClient.send(request1, HttpResponse.BodyHandlers.ofString());
             if (response1.statusCode() == 200) {
-                String usersResponse = response1.body();
-                JSONObject responseJson = new JSONObject(response1.body());
-                JSONArray usersArray = responseJson.getJSONArray("users");
-                for (int i = 0; i < usersArray.length(); i++) {
-                    JSONObject userJson = usersArray.getJSONObject(i);
-                    String userId = userJson.getString("id");
-                    userIds.add(userId);
+                try {
+                    String usersResponse = response1.body();
+                    JSONObject responseJson = new JSONObject(response1.body());
+                    JSONArray usersArray = responseJson.getJSONArray("users");
+                    for (int i = 0; i < usersArray.length(); i++) {
+                        JSONObject userJson = usersArray.getJSONObject(i);
+                        String userId = userJson.getString("id");
+                        userIds.add(userId);
+                    }
+                }catch (JSONException e){
+                    throw new UserNotFoundException("User not found for this "+query+": " + value);
                 }
-            } else {
-                throw new UserNotFoundException("User not found for this "+query+": " + value);
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

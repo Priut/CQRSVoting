@@ -25,12 +25,15 @@ public class InvitesLookupController {
 
         if (id != null) {
             invites = queryDispacher.send(new FindInvitesByEventIdQuery(id));
+            if (invites == null || invites.size() == 0) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } else {
             invites = queryDispacher.send(new FindAllInvitesQuery());
         }
 
-        if (invites == null || invites.size() == 0) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        if(invites == null){
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         var response = InvitesLookupResponse.builder()
                 .invites(invites)

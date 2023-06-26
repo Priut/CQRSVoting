@@ -82,7 +82,7 @@ public class UserAggregate extends AggregateRoot {
     }
     public void changeEmail(String email){
         if(!this.active)
-            throw new IllegalStateException("Email cannot be changed for a deleted user!");
+            throw new UserDeletedException("Email cannot be changed for a deleted user!");
         validateEmail(email);
         raiseEvent(UserEmailUpdatedEvent.builder()
                 .id(this.id)

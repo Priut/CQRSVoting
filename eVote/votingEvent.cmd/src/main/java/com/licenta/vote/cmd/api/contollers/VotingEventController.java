@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping(path = "/api/v1/votingEventCollection")
 public class VotingEventController {
-    private final Logger logger = Logger.getLogger(VotingEventController.class.getName());
 
     @Autowired
     private CommandDispacher commandDispacher;
@@ -28,26 +27,31 @@ public class VotingEventController {
             commandDispacher.send(command);
             return new ResponseEntity<>(new CreateVotingEventResponse("Voting event creation request completed succesfuly!", id), HttpStatus.CREATED);
     }
+    @PostMapping(path = "/{id}/attendance")
+    public ResponseEntity<BaseResponse> calcuateAttendance(@PathVariable(value = "id")String id){
 
-    @PutMapping(path = "/results/{id}")
-    public ResponseEntity<BaseResponse> calculateResult(@PathVariable(value = "id")String id,@RequestBody CalculateResultCommand command){
-
-        command.setId(id);
-        commandDispacher.send(command);
-        return new ResponseEntity<>(new CreateVotingEventResponse("Results calculation request completed succesfuly!", id), HttpStatus.CREATED);
+        commandDispacher.send(new CalculateAttendanceCommand(id));
+        return new ResponseEntity<>(new CreateVotingEventResponse("Vote attendance calculated succesfuly!", id), HttpStatus.OK);
     }
-    @PostMapping(path = "/vote/{id_event}")
+    @PostMapping(path = "/{id}/results")
+    public ResponseEntity<BaseResponse> calculateResult(@PathVariable(value = "id")String id){
+
+        commandDispacher.send(new CalculateResultCommand(id));
+        return new ResponseEntity<>(new CreateVotingEventResponse("Results calculation request completed succesfuly!", id), HttpStatus.OK);
+    }
+    @PostMapping(path = "/{id_event}/vote")
     public ResponseEntity<BaseResponse> registerVote(@PathVariable(value = "id_event")String id_event,@RequestBody RegisterVoteCommand command){
 
         command.setId(id_event);
         commandDispacher.send(command);
-        return new ResponseEntity<>(new CreateVotingEventResponse("Vote registered succesfuly!", id_event), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CreateVotingEventResponse("Vote registered succesfuly!", id_event), HttpStatus.OK);
     }
-    @PutMapping(path = "/{id_event}")
+    @PostMapping(path = "/{id_event}/finishdate")
     public ResponseEntity<BaseResponse> modifyFinishDate(@PathVariable(value = "id_event")String id_event,@RequestBody ModifyFinishDateCommand command){
 
         command.setId(id_event);
         commandDispacher.send(command);
-        return new ResponseEntity<>(new CreateVotingEventResponse("Vote finish date modified succesfuly!", id_event), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CreateVotingEventResponse("Vote finish date modified succesfuly!", id_event), HttpStatus.OK);
     }
+
 }

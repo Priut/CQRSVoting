@@ -23,6 +23,9 @@ public class UserController {
     private CommandDispacher commandDispacher;
 
     @PostMapping
+
+
+
     public ResponseEntity<BaseResponse> createUser(@RequestBody CreateUserCommand command){
         String id = UUID.randomUUID().toString();
         command.setId(id);
@@ -35,7 +38,7 @@ public class UserController {
                                                      @RequestBody UpdateEmailCommand command){
         command.setId(id);
         commandDispacher.send(command);
-        return new ResponseEntity<>(new BaseResponse("Email change request completed successfully!"), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping(path = "/{id}/phoneNumber")
     private ResponseEntity<BaseResponse> changePhoneNumber(@PathVariable(value = "id")String id,
@@ -43,7 +46,7 @@ public class UserController {
 
         command.setId(id);
         commandDispacher.send(command);
-        return new ResponseEntity<>(new BaseResponse("Phone number change request completed succesfuly!"), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
     @PutMapping(path = "/{id}/country")
@@ -51,21 +54,21 @@ public class UserController {
                                                            @RequestBody UpdateCountryCommand command){
         command.setId(id);
         commandDispacher.send(command);
-        return new ResponseEntity<>(new BaseResponse("Country change request completed succesfuly!"), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping(path = "/{id}/county")
     private ResponseEntity<BaseResponse> changeCounty(@PathVariable(value = "id")String id,
                                                        @RequestBody UpdateCountyCommand command){
         command.setId(id);
         commandDispacher.send(command);
-        return new ResponseEntity<>(new BaseResponse("County change request completed succesfuly!"), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping(path = "/{id}/city")
     private ResponseEntity<BaseResponse> changeCity(@PathVariable(value = "id")String id,
                                                     @RequestBody UpdateCityCommand command){
         command.setId(id);
         commandDispacher.send(command);
-        return new ResponseEntity<>(new BaseResponse("City change request completed succesfuly!"), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping(path = "/{id}/workPlace")
     private ResponseEntity<BaseResponse> changeWorkPlace(@PathVariable(value = "id")String id,
@@ -73,13 +76,13 @@ public class UserController {
 
         command.setId(id);
         commandDispacher.send(command);
-        return new ResponseEntity<>(new BaseResponse("Work place change request completed succesfuly!"), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<BaseResponse> deleteUser(@PathVariable(value = "id")String id){
 
         commandDispacher.send(new DeleteUserCommand(id));
-        return new ResponseEntity<>(new BaseResponse("User deleted request completed succesfuly!"), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(path = "/restoreDb")

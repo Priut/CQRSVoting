@@ -7,4 +7,5 @@ public interface CommandHandler {
     void handle(CalculateResultCommand command);
     void handle(RegisterVoteCommand command);
     void handle(ModifyFinishDateCommand command);
+    void handle (CalculateAttendanceCommand command);
 }

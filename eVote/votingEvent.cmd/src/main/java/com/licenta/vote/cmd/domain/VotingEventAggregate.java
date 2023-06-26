@@ -3,11 +3,12 @@ package com.licenta.vote.cmd.domain;
 import com.licenta.cqrs.core.domain.AggregateRoot;
 import com.licenta.vote.CustomExceptions.*;
 import com.licenta.vote.cmd.api.commands.CreateVotingEventCommand;
-import com.licenta.vote.common.events.FinishDateModifiedEvent;
-import com.licenta.vote.common.events.ResultsCalculatedEvent;
-import com.licenta.vote.common.events.VoteRegisteredEvent;
-import com.licenta.vote.common.events.VotingEventCreatedEvent;
+import com.licenta.vote.common.events.*;
 import lombok.NoArgsConstructor;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,7 +19,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.logging.Logger;
 
 @NoArgsConstructor
 public class VotingEventAggregate extends AggregateRoot {
@@ -27,9 +27,9 @@ public class VotingEventAggregate extends AggregateRoot {
     private ArrayList<String> candidates = new ArrayList<>();
     private LocalDate startDate;
     private LocalDate endDate;
+    private double attendance;
     private String winner;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private final Logger logger = Logger.getLogger(VotingEventAggregate.class.getName());
     public Boolean getActive(){
         return active;
     }
@@ -58,6 +58,7 @@ public class VotingEventAggregate extends AggregateRoot {
         this.id = event.getId();
         this.candidates = event.getCandidates();
         this.active = true;
+        this.attendance = 0.0;
         startDate = LocalDate.parse(event.getStart_date(), formatter);
         endDate = LocalDate.parse(event.getFinish_date(), formatter);
     }
@@ -65,7 +66,7 @@ public class VotingEventAggregate extends AggregateRoot {
         if(!this.active)
             throw new VotingEventDeletedException("Results cannot be calculated for a deleted voting event!");
         if (LocalDate.now().isBefore(endDate)){
-            throw new ResultsDateException("Results can only be calculated after the event has ended");
+            throw new ResultsDateException("Results can only be calculated after the event has ended!");
         }
         Map<String, Integer> voteCounts = new HashMap<>();
         for (String candidate : candidates) {
@@ -103,28 +104,27 @@ public class VotingEventAggregate extends AggregateRoot {
         }
 
         if (LocalDate.now().isBefore(startDate) || LocalDate.now().isAfter(endDate)) {
-            throw new InvalidVotingDateException("Voting date is outside of the voting event's start and finish dates");
+            throw new InvalidVotingDateException("Voting date is outside of the voting event's start and finish dates!");
+        }
+        if (!candidates.contains(option)) {
+            throw new InvalidCandidateOptionException("Invalid candidate option!");
         }
         HttpClient httpClient = HttpClient.newHttpClient();
-
+        //TODO de inlocuit cu container pt docker
         HttpRequest request1 = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5004/api/v1/inviteCollection/status/" + id_invite))
+                .uri(URI.create("http://localhost:5004/api/v1/inviteCollection/" + id_invite + "/status"))
                 .method("PUT", HttpRequest.BodyPublishers.noBody())
                 .build();
 
         try {
             HttpResponse<String> response1 = httpClient.send(request1, HttpResponse.BodyHandlers.ofString());
 
-            if (response1.statusCode() == 200) {
-                if (candidates.contains(option)) {
+            if (response1.statusCode() == 204) {
                     raiseEvent(VoteRegisteredEvent.builder()
                             .id(id)
                             .id_invite(id_invite)
                             .option(option)
                             .build());
-                } else {
-                    throw new InvalidCandidateOptionException("Invalid candidate option!");
-                }
             } else if(response1.statusCode() == 409){
                 throw new InviteUsedException("Invite already used!");
             }else{
@@ -156,5 +156,58 @@ public class VotingEventAggregate extends AggregateRoot {
         this.id = event.getId();
         this.active = true;
         this.endDate = LocalDate.parse(event.getFinish_date(), formatter);
+    }
+    public void calculateAttendance() {
+        if (!this.active) {
+            throw new VotingEventDeletedException("Attendance cannot be calculated for a deleted voting event!");
+        }
+        if (LocalDate.now().isBefore(startDate)) {
+            throw new ResultsDateException("Attendance can only be calculated after the event has started!");
+        }
+        HttpClient httpClient = HttpClient.newHttpClient();
+
+        HttpRequest request1 = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:5005/api/v1/invitesLookup/?id=" + id))
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response1 = httpClient.send(request1, HttpResponse.BodyHandlers.ofString());
+
+            if (response1.statusCode() == 200) {
+                String responseBody = response1.body();
+
+                JSONObject jsonObject = new JSONObject(responseBody);
+                JSONArray invitesArray = jsonObject.getJSONArray("invites");
+
+                int totalInvites = invitesArray.length();
+                int attendedInvites = 0;
+
+                for (int i = 0; i < totalInvites; i++) {
+                    JSONObject inviteObject = invitesArray.getJSONObject(i);
+                    boolean status = inviteObject.getBoolean("status");
+                    if (status) {
+                        attendedInvites++;
+                    }
+                }
+
+                double attendance = (double) attendedInvites / totalInvites * 100;
+                double roundedAttendance = Math.round(attendance * 100.0) / 100.0;
+
+                raiseEvent(AttendanceCalculatedEvent.builder()
+                        .id(this.id)
+                        .attendance(roundedAttendance)
+                        .build());
+            } else {
+                throw new InviteNotFoundException("Invites not found for this voting event!");
+            }
+        } catch (IOException | InterruptedException | JSONException e) {
+            throw new AttendanceCalculationException("Error while calculating attendance vote: " + e.getMessage());
+        }
+    }
+    public void apply(AttendanceCalculatedEvent event){
+        this.id = event.getId();
+        this.active = true;
+        this.attendance = event.getAttendance();
     }
 }

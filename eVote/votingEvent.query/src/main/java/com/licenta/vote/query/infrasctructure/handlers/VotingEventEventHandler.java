@@ -1,5 +1,6 @@
 package com.licenta.vote.query.infrasctructure.handlers;
 
+import com.licenta.vote.common.events.AttendanceCalculatedEvent;
 import com.licenta.vote.common.events.FinishDateModifiedEvent;
 import com.licenta.vote.common.events.ResultsCalculatedEvent;
 import com.licenta.vote.common.events.VotingEventCreatedEvent;
@@ -54,6 +55,14 @@ public class VotingEventEventHandler implements EventHandler {
         if (votingEvent.isEmpty())
             return;
         votingEvent.get().setFinish_date(event.getFinish_date());
+        votingEventRepository.save(votingEvent.get());
+    }
+    @Override
+    public void on(AttendanceCalculatedEvent event) {
+        var votingEvent = votingEventRepository.findById(event.getId());
+        if (votingEvent.isEmpty())
+            return;
+        votingEvent.get().setAttendance(event.getAttendance());
         votingEventRepository.save(votingEvent.get());
     }
 

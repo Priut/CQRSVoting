@@ -1,6 +1,11 @@
 package com.licenta.vote.query.api.controllers;
 
 import com.licenta.cqrs.core.inrastructure.QueryDispacher;
+import com.licenta.vote.CustomExceptions.InvalidCandidateOptionException;
+import com.licenta.vote.CustomExceptions.InviteNotFoundException;
+import com.licenta.vote.CustomExceptions.InviteUsedException;
+import com.licenta.vote.CustomExceptions.VoteRegistrationException;
+import com.licenta.vote.common.events.VoteRegisteredEvent;
 import com.licenta.vote.query.api.dto.VotingEventLookupResponse;
 import com.licenta.vote.query.api.queries.FindAllEventsQuery;
 import com.licenta.vote.query.api.queries.FindEventByIdQuery;
@@ -10,6 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,7 +28,6 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping(path = "/api/v1/votingEventsLookup")
 public class VotingEventLookupController {
-    private final Logger logger = Logger.getLogger(VotingEventLookupController.class.getName());
 
     @Autowired
     private QueryDispacher queryDispacher;
@@ -31,13 +40,13 @@ public class VotingEventLookupController {
 
         if (id != null) {
             votingEvents = queryDispacher.send(new FindEventByIdQuery(id));
+            if (votingEvents == null || votingEvents.size() == 0) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } else {
             votingEvents = queryDispacher.send(new FindAllEventsQuery());
         }
 
-        if (votingEvents == null || votingEvents.size() == 0) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        }
         var response = VotingEventLookupResponse.builder()
                 .votingEvents(votingEvents)
                 .message(MessageFormat.format("Successfully returned {0} event(s)!", votingEvents.size()))

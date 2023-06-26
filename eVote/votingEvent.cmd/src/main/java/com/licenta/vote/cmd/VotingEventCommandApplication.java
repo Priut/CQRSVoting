@@ -27,6 +27,7 @@ public class VotingEventCommandApplication {
 		commandDispacher.registerHandler(CalculateResultCommand.class, commandHandler::handle);
 		commandDispacher.registerHandler(RegisterVoteCommand.class, commandHandler::handle);
 		commandDispacher.registerHandler(ModifyFinishDateCommand.class,commandHandler::handle);
+		commandDispacher.registerHandler(CalculateAttendanceCommand.class,commandHandler::handle);
 
 	}
 

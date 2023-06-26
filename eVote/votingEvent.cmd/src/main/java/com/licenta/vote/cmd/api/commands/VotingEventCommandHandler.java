@@ -37,6 +37,12 @@ public class VotingEventCommandHandler implements CommandHandler {
         aggregate.modifyFinishDate(command.getFinish_date());
         eventSourcingHandler.save(aggregate);
     }
+    @Override
+    public void handle(CalculateAttendanceCommand command) {
+        var aggregate = eventSourcingHandler.getById(command.getId());
+        aggregate.calculateAttendance();
+        eventSourcingHandler.save(aggregate);
+    }
 
 
 }

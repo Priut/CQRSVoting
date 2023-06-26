@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class UserQueryDispatcher implements QueryDispacher {
+public class VotingEventQueryDispatcher implements QueryDispacher {
     private final Map<Class<? extends BaseQuery>,List<QueryHandlerMethod>> routes = new HashMap<>();
     @Override
     public <T extends BaseQuery> void registerHandler(Class<T> type, QueryHandlerMethod<T> handler) {

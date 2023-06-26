@@ -41,6 +41,9 @@ public class UserLookupController {
 
         if (id != null) {
             users = queryDispacher.send(new FindUserByIdQuery(id));
+            if (users == null || users.size() == 0) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
         } else if (email != null) {
             users = queryDispacher.send(new FindUserByEmailQuery(email));
         } else if (phoneNumber != null) {
@@ -57,8 +60,8 @@ public class UserLookupController {
             users = queryDispacher.send(new FindAllUsersQuery());
         }
 
-        if (users == null || users.size() == 0) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        if(users == null){
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         var response = UserLookupResponse.builder()
                 .users(users)

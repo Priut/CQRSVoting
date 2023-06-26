@@ -1,5 +1,6 @@
 package com.licenta.vote.query.infrasctructure.consumers;
 
+import com.licenta.vote.common.events.AttendanceCalculatedEvent;
 import com.licenta.vote.common.events.FinishDateModifiedEvent;
 import com.licenta.vote.common.events.ResultsCalculatedEvent;
 import com.licenta.vote.common.events.VotingEventCreatedEvent;
@@ -29,6 +30,12 @@ public class VotingEventEventConsumer implements EventConsumer{
     @KafkaListener(topics = "FinishDateModifiedEvent", groupId = "${spring.kafka.consumer.group-id}")
     @Override
     public void consume(@Payload FinishDateModifiedEvent event, Acknowledgment ack) {
+        eventHandler.on(event);
+        ack.acknowledge();
+    }
+    @KafkaListener(topics = "AttendanceCalculatedEvent", groupId = "${spring.kafka.consumer.group-id}")
+    @Override
+    public void consume(@Payload AttendanceCalculatedEvent event, Acknowledgment ack) {
         eventHandler.on(event);
         ack.acknowledge();
     }

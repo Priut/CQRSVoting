@@ -26,7 +26,7 @@ public class VotingEventQueryHandler implements QueryHandler {
     public List<BaseEntity> handle(FindEventByIdQuery query) {
         var votingEvent = votingEventRepository.findById(query.getId());
         if (votingEvent.isEmpty())
-            throw new VotingEventNotFoundException("Voting event does not exist.") ;
+            return null;
         List<BaseEntity> votingEventList = new ArrayList<>();
         votingEventList.add(votingEvent.get());
         return votingEventList;
