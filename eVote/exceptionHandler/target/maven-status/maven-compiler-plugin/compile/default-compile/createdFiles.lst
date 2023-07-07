@@ -12,7 +12,6 @@ com/licenta/vote/CustomExceptions/AggregateNotFoundException.class
 com/licenta/vote/CustomExceptions/InviteUsedException.class
 com/licenta/vote/CustomExceptions/InviteNotFoundException.class
 com/licenta/vote/CustomExceptions/ConcurencyException.class
-com/licenta/vote/CustomExceptions/InvalidInputException.class
 com/licenta/vote/CustomExceptions/NoQueryHandlerRegisteredException.class
 com/licenta/vote/CustomExceptions/InvalidVotingDateException.class
 com/licenta/vote/CustomExceptions/InvalidEmailFormatException.class
@@ -23,7 +22,7 @@ com/licenta/vote/CustomExceptions/MultipleQueryHandlersFoundException.class
 com/licenta/vote/CustomExceptions/VotingEventNotFoundException.class
 com/licenta/vote/CustomExceptions/InviteDeletedException.class
 com/licenta/vote/CustomExceptions/VotingEventDeletedException.class
+com/licenta/vote/CustomExceptions/AttendanceCalculationException.class
 com/licenta/vote/CustomExceptions/InvalidCandidateOptionException.class
 com/licenta/vote/ApplicationException.class
 com/licenta/vote/CustomExceptions/FutureBirthDateException.class
-com/licenta/vote/CustomExceptions/ResourceNotFoundException.class

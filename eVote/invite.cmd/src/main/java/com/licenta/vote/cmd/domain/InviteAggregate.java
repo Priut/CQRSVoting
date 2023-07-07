@@ -43,7 +43,6 @@ public class InviteAggregate extends AggregateRoot {
         String id_event = "";
 
         HttpClient httpClient = HttpClient.newHttpClient();
-//TODO de inlocuit cand urc in docker cu user-query si votingEvent-query
         HttpRequest request1 = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5001/api/v1/usersLookup/?id=" + command.getId_user()))
                 .GET()

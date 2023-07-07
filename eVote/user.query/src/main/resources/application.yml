@@ -1,7 +1,13 @@
+
+
 server:
   port: 5001
 
 spring:
+  data:
+    mongodb:
+      repositories:
+        enabled: false
   jpa:
     #PostgreSQL settings
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect

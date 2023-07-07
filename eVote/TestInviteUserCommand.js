@@ -1,9 +1,9 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
+import { check, sleep } from 'k6';
 
 export let options = {
-    vus: 1,
-    iterations: 1,
+    vus: 100,
+    iterations: 100,
 };
 
 export function setup() {
@@ -15,9 +15,13 @@ export function setup() {
 }
 
 export default function (data) {
-    let id_votingEvent = 'cbd902c2-e282-4fab-9f38-5278e1826e18';
+    let id_votingEvent = '0c2dfbff-9f87-4ebb-a1ec-f43cd14eb7b9';
 
-    for (let id_user of data.userIds) {
+    let startIndex = Math.floor(data.userIds.length / options.vus) * (__VU - 1);
+    let endIndex = Math.floor(data.userIds.length / options.vus) * __VU;
+
+    for (let i = startIndex; i < endIndex; i++) {
+        let id_user = data.userIds[i];
         let payload = JSON.stringify({
             id_user: id_user,
             id_votingEvent: id_votingEvent,
@@ -29,8 +33,13 @@ export default function (data) {
             },
         };
 
-        // Send POST request to invite user to the event
-        http.post('http://localhost:5004/api/v1/inviteCollection', payload, params);
+
+        const res = http.post('http://localhost:5004/api/v1/inviteCollection', payload, params);
+        check(res, {
+            'status is 201': (r) => r.status === 201,
+        });
+        if (res.status !== 201) {
+            console.log(`Request failed. Status: ${res.status}, Body: ${res.body}`);
+        }
     }
-    sleep(1);
 }

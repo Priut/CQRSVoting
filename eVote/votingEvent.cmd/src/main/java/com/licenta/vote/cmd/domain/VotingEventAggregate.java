@@ -23,7 +23,7 @@ import java.util.*;
 @NoArgsConstructor
 public class VotingEventAggregate extends AggregateRoot {
     private Boolean active;
-    private ArrayList<Integer> votes = new ArrayList<>();
+    private HashMap<String, Integer> votes = new HashMap<>();
     private ArrayList<String> candidates = new ArrayList<>();
     private LocalDate startDate;
     private LocalDate endDate;
@@ -35,7 +35,7 @@ public class VotingEventAggregate extends AggregateRoot {
     }
     public VotingEventAggregate(CreateVotingEventCommand command){
         var id = command.getId();
-        votes = new ArrayList<>();
+        votes = new HashMap<>();
         candidates = new ArrayList<>();
         try{
             LocalDate date1 = LocalDate.parse(command.getStart_date(), formatter);
@@ -73,14 +73,9 @@ public class VotingEventAggregate extends AggregateRoot {
             voteCounts.put(candidate, 0);
         }
 
-        for (int vote : votes) {
-            String candidate = candidates.get(vote);
-            voteCounts.put(candidate, voteCounts.get(candidate) + 1);
-        }
-
         String winner = null;
         int maxVotes = 0;
-        for (Map.Entry<String, Integer> entry : voteCounts.entrySet()) {
+        for (Map.Entry<String, Integer> entry : votes.entrySet()) {
             if (entry.getValue() > maxVotes) {
                 winner = entry.getKey();
                 maxVotes = entry.getValue();
@@ -110,7 +105,6 @@ public class VotingEventAggregate extends AggregateRoot {
             throw new InvalidCandidateOptionException("Invalid candidate option!");
         }
         HttpClient httpClient = HttpClient.newHttpClient();
-        //TODO de inlocuit cu container pt docker
         HttpRequest request1 = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5004/api/v1/inviteCollection/" + id_invite + "/status"))
                 .method("PUT", HttpRequest.BodyPublishers.noBody())
@@ -138,7 +132,11 @@ public class VotingEventAggregate extends AggregateRoot {
     public void apply(VoteRegisteredEvent event){
         this.id = event.getId();
         this.active = true;
-        this.votes.add(candidates.indexOf(event.getOption()));
+        if(this.votes.containsKey(event.getOption())) {
+            votes.put(event.getOption(), votes.get(event.getOption()) + 1);
+        } else {
+            votes.put(event.getOption(), 1);
+        }
     }
     public void modifyFinishDate(String finish_date) {
         if (!this.active) {

@@ -32,10 +32,10 @@ function randomPhoneNumber() {
     }
     return phoneNumber;
 }
-
+//Load testing
 export let options = {
-    vus: 5,
-    duration: '1m',
+    vus: 100,
+    iterations:10000
 };
 
 export default function () {
@@ -74,7 +74,6 @@ export default function () {
     });
     if (res.status !== 201) {
         console.log(`Request failed. Status: ${res.status}, Body: ${res.body}`);
-        console.log(phoneNumber)
     }
     sleep(1);
 }

@@ -23,6 +23,7 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_LISTENERS=PLAINTEXT://:9092
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_ENABLE_KRAFT=no
     depends_on:
       - zookeeper
 
@@ -36,3 +37,4 @@ networks:
   default:
     external:
       name: myNetwork
+ 
