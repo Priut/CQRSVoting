@@ -95,7 +95,7 @@ public class InviteCommandHandler implements CommandHandler {
     public void handle(InviteUsersByWorkplaceCommand command) {
         HttpClient httpClient = HttpClient.newHttpClient();
         String id_event = getEvent(command.getId_votingEvent());
-        ArrayList<String> userIds = getUserswithQuery("workplace", command.getWorkplace());
+        ArrayList<String> userIds = getUserswithQuery("workPlace", command.getWorkplace());
 
         if(!Objects.equals(id_event, "") & userIds.size() != 0){
             for (String uId:

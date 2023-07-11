@@ -34,8 +34,8 @@ function randomPhoneNumber() {
 }
 //Load testing
 export let options = {
-    vus: 100,
-    iterations:10000
+    vus: 10,
+    iterations:10
 };
 
 export default function () {
@@ -67,7 +67,7 @@ export default function () {
         },
     };
 
-    const res = http.post('http://localhost:5000/api/v1/userCollection', payload, params);
+    const res = http.post('http://swarm-machine:5100/api/v1/userCollection', payload, params);
 
     check(res, {
         'status is 201': (r) => r.status === 201,
